@@ -2,11 +2,7 @@ import { auth } from "../scripts/Auth"
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Lock, User, ShieldCheck, AlertCircle } from 'lucide-react';
 
-type LoginProps = {
-    onLoginSuccess: () => void
-}
-
-export default function Login({ onLoginSuccess }: LoginProps) {
+export default function Login() {
     const [authError, setAuthError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
@@ -16,10 +12,13 @@ export default function Login({ onLoginSuccess }: LoginProps) {
      * 
      */
     useEffect(() => {
+        // Redirección al dashboard si el usuario se autentica
         if (auth.isLoggedIn()) {
+            console.log("Usuario autenticado, redirigiendo al dashboard...");
             onLoginSuccess();
         }
-    }, [onLoginSuccess]);
+
+    }, []);
 
     /**
      * Tarea: Manejar el envío del formulario de inicio de sesión
@@ -64,9 +63,17 @@ export default function Login({ onLoginSuccess }: LoginProps) {
         }
     }
 
+    /**
+     * Tarea: Manejar el inicio de sesión exitoso o si el usuario ya está autenticado
+     */
+    const onLoginSuccess = () => {
+        // Redirigir al dashboard después de un inicio de sesión exitoso
+        window.location.href = "/";
+    }
+
     return (
         <section>
-            <div className="relative w-full h-screen bg-linear-to-br from-[#1e11d9] via-[#003D9D] to-[#001f5c] overflow-hidden">
+            <div className="relative w-full h-full bg-linear-to-br from-[#1e11d9] via-[#003D9D] to-[#001f5c] overflow-hidden">
                 {/* Decorative Background Elements */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />

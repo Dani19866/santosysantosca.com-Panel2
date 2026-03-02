@@ -1,8 +1,8 @@
 import Layout from "../layout/Layout"
 
-export default function LiveProduction() {
+export default function LiveProduction({ authProvider }: { authProvider?: boolean }) {
   return (
-    <Layout>
+    <Layout authProvider={authProvider}>
       Live Production
     </Layout>
   )

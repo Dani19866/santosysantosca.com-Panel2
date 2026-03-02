@@ -2,7 +2,7 @@ import Layout from "../layout/Layout"
 
 export default function BOM() {
   return (
-    <Layout>
+    <Layout description="4 RECETAS CONFIGURADAS">
       BOM
     </Layout>
   )

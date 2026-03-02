@@ -1,8 +1,8 @@
 import Layout from "../layout/Layout"
 
-export default function Dashboard() {
+export default function Dashboard({ authProvider }: { authProvider?: boolean }) {
   return (
-    <Layout>
+    <Layout authProvider={authProvider}>
       Dashboard
     </Layout>
   )
