@@ -1,16 +1,36 @@
-import { useState } from "react"
+// Pages
+import BOM from "./pages/bom"
 import Dashboard from "./pages/dashboard"
+import HistoryProduction from "./pages/historyProduction"
+import LiveProduction from "./pages/liveProduction"
 import Login from "./pages/login"
-import { auth } from "./scripts/Auth"
+import Machines from "./pages/machines"
+import Parameters from "./pages/parameters"
+import Products from "./pages/products"
+import Sensors from "./pages/sensors"
+import Settings from "./pages/settings"
+
+// Components
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(auth.isLoggedIn())
 
   return (
     <>
-      {
-        isAuthenticated ? <Dashboard /> : <Login onLoginSuccess={() => setIsAuthenticated(true)} />
-      }
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Dashboard authProvider={true} />} />
+          <Route path="/live-production" element={<LiveProduction authProvider={true} />} />
+          <Route path="/history-production" element={<HistoryProduction />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/bom" element={<BOM />} />
+          <Route path="/parameters" element={<Parameters />} />
+          <Route path="/machines" element={<Machines />} />
+          <Route path="/sensors" element={<Sensors />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
