@@ -6,7 +6,7 @@ import LiveProduction from "./pages/liveProduction"
 import Login from "./pages/login"
 import Machines from "./pages/machines"
 import Parameters from "./pages/parameters"
-import Products from "./pages/products"
+import Products from "./pages/products/products"
 import Sensors from "./pages/sensors"
 import Settings from "./pages/settings"
 
@@ -21,9 +21,10 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Dashboard authProvider={true} />} />
+          <Route path="/products" element={<Products authProvider={true} />} />
+
           <Route path="/live-production" element={<LiveProduction authProvider={true} />} />
           <Route path="/history-production" element={<HistoryProduction />} />
-          <Route path="/products" element={<Products />} />
           <Route path="/bom" element={<BOM />} />
           <Route path="/parameters" element={<Parameters />} />
           <Route path="/machines" element={<Machines />} />

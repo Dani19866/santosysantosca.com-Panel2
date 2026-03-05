@@ -2,7 +2,7 @@ import Layout from "../layout/Layout"
 
 export default function LiveProduction({ authProvider }: { authProvider?: boolean }) {
   return (
-    <Layout authProvider={authProvider}>
+    <Layout authProvider={authProvider} showViewMode={true}>
       Live Production
     </Layout>
   )

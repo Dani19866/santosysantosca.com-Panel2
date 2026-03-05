@@ -2,7 +2,7 @@ import Layout from "../layout/Layout"
 
 export default function Settings() {
   return (
-    <Layout>
+    <Layout showViewMode={false}>
       Settings
     </Layout>
   )
