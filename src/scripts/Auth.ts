@@ -1,7 +1,7 @@
 import {
     api_register_user,
     api_log_user,
-} from "./URL.js"
+} from "./URL.ts"
 
 class Auth {
     authenticated_path: string
@@ -19,10 +19,11 @@ class Auth {
     async login(username: string, password: string): Promise<boolean> {
         const requestOptions = {
             method: 'POST',
+            credentials: 'include' as RequestCredentials,
             headers: { 
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-
+            
             body: new URLSearchParams({
                 username,
                 password,
