@@ -9,4 +9,4 @@ export const api_get_products: string = api_base + "products"
 export const api_save_product: string = api_base + "products/save"
 export const api_modify_product: string = api_base + "products/{id}"
 export const api_get_one_product: string = api_base + "products/{id}"
-
+export const api_search_product: string = api_base + "products/search"

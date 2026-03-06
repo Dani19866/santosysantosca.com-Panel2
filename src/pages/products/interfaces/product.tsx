@@ -30,3 +30,9 @@ export interface Product {
     //   No ha sido implementado aún
     imageUrl?: string;
 }
+
+export interface PreviousPageCache {
+  page: number
+  products: Product[]
+  hasNextPage: boolean
+}

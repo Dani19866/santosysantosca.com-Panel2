@@ -113,8 +113,8 @@ export default function Nav({ children, description, showViewMode = true }: NavP
             )}
 
             {/* Contenedor principal que contiene el contenido de la página */}
-            <main className={`overflow-hidden w-full ${isMobileOpen ? "pointer-events-none lg:pointer-events-auto" : ""}`}>
-                <header className="h-24 lg:h-30 border-b border-[#E5E7EB] bg-white flex items-center px-4 gap-3">
+            <main className={`overflow-hidden w-full flex flex-col min-h-0 ${isMobileOpen ? "pointer-events-none lg:pointer-events-auto" : ""}`}>
+                <header className="h-24 lg:h-30 shrink-0 border-b border-[#E5E7EB] bg-white flex items-center px-4 gap-3">
 
                     {/* Botón para abrir/cerrar el menú móvil */}
                     <button onClick={() => setIsMobileOpen((current) => !current)} className="lg:hidden fixed bottom-6 left-6 z-40 size-11 rounded-lg bg-[#1e11d9] shadow-lg flex items-center justify-center group hover:bg-[#003D9D] transition-all" aria-label={isMobileOpen ? "Cerrar menú" : "Abrir menú"}>
@@ -158,7 +158,7 @@ export default function Nav({ children, description, showViewMode = true }: NavP
                     </div>
                 </header>
 
-                <section className={`h-[calc(100vh-56px)] ${isMobileOpen ? "overflow-hidden" : "overflow-auto"}`}>
+                <section className={`flex-1 min-h-0 ${isMobileOpen ? "overflow-hidden" : "overflow-auto"}`}>
                     <div>
                         {children}
                     </div>

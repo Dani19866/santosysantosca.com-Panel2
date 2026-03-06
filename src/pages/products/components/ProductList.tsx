@@ -1,6 +1,6 @@
 import { Eye, Package } from "lucide-react"
 import type { ViewMode, ViewProps } from "../types"
-import { getProductType } from "../utils"
+import { getProductType } from "../logic"
 
 const alignClassMap = {
   left: "text-left",
@@ -23,11 +23,8 @@ function CardsView({ products, onViewDetails, getStockColor }: ViewProps) {
         const stockColor = getStockColor(product.currentStock, product.safetyStock)
 
         return (
-          <div
-            key={product.id}
-            className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all overflow-hidden"
-          >
-            <div className="w-full h-48 bg-gradient-to-br from-[#F9FAFB] to-[#E5E7EB] flex items-center justify-center border-b border-[#E5E7EB]">
+          <div key={product.id} className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all overflow-hidden">
+            <div className="w-full h-48 bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB] flex items-center justify-center border-b border-[#E5E7EB]">
               <Package className="size-20 text-[#9CA3AF]" strokeWidth={1.5} />
             </div>
 
@@ -142,12 +139,9 @@ function CompactView({ products, onViewDetails, getStockColor }: ViewProps) {
         const stockColor = getStockColor(product.currentStock, product.safetyStock)
 
         return (
-          <div
-            key={product.id}
-            className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all p-4"
-          >
+          <div key={product.id} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all p-4">
             <div className="flex flex-col lg:flex-row items-start lg:items-center gap-3">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#F9FAFB] to-[#E5E7EB] rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-16 h-16 bg-linear-to-br from-[#F9FAFB] to-[#E5E7EB] rounded-lg flex items-center justify-center shrink-0">
                 <Package className="size-8 text-[#9CA3AF]" strokeWidth={1.5} />
               </div>
 
