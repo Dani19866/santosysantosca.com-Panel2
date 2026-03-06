@@ -1,7 +1,7 @@
 import type { 
   Product, 
   PreviousPageCache 
-} from "./interfaces/product"
+} from "../interfaces/product"
 
 export const PREVIOUS_PAGE_CACHE_KEY: string = "products_previous_page_cache"
 export const PRODUCTS_PER_PAGE: number = 20

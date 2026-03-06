@@ -6,7 +6,7 @@ import LiveProduction from "./pages/liveProduction"
 import Login from "./pages/login"
 import Machines from "./pages/machines"
 import Parameters from "./pages/parameters"
-import Products from "./pages/products/products"
+import Products from "./pages/products"
 import Sensors from "./pages/sensors"
 import Settings from "./pages/settings"
 

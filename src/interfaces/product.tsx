@@ -1,3 +1,5 @@
+import type { ViewMode } from "../layout/viewMode"
+
 /**
  * Interfaz para representar el costo histórico de un producto
  * 
@@ -35,4 +37,12 @@ export interface PreviousPageCache {
   page: number
   products: Product[]
   hasNextPage: boolean
+}
+
+export type { ViewMode }
+
+export interface ViewProps {
+  products: Product[]
+  onViewDetails: (product: Product) => void
+  getStockColor: (current: number, safety: number) => string
 }

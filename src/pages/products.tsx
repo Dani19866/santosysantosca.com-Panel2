@@ -8,28 +8,28 @@ import {
   Database,
   Plus
 } from "lucide-react"
-import type { Product } from "./interfaces/product"
-import Layout from "../../layout/Layout"
-import AddProductModal from "./components/AddProductModal"
-import ProductDetailModal from "./components/ProductDetailModal"
-import ProductList from "./components/ProductList"
-import SearchBar from "./components/SearchBar"
-import SearchResultsDropdown from "./components/SearchResultsDropdown"
+import type { Product } from "../interfaces/product.tsx"
+import Layout from "../layout/Layout.tsx"
+import AddProductModal from "../components/ProductAddItemModal.tsx"
+import ProductDetailModal from "../components/ProductDetailModal.tsx"
+import ProductList from "../components/ProductList.tsx"
+import SearchBar from "../components/SearchBar.tsx"
+import SearchResultsDropdown from "../components/SearchResultsDropdown.tsx"
 import {
   getStockColor,
   mapProduct,
   getPreviousPageCache,
   savePreviousPageCache
-} from "./logic.ts"
-import { useViewMode } from "../../layout/viewMode"
+} from "../logic/productLogic.ts"
+import { useViewMode } from "../layout/viewMode.ts"
 import {
   api_get_products,
   api_search_product
-} from "../../scripts/URL.ts"
+} from "../scripts/URL.ts"
 import {
   PRODUCTS_PER_PAGE,
   PRODUCTS_FETCH_SIZE
-} from "./logic.ts"
+} from "../logic/productLogic.ts"
 
 interface SearchDropdownPosition {
   top: number
