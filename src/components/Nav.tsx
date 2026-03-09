@@ -132,7 +132,7 @@ export default function Nav({ children, description, showViewMode = true }: NavP
                             </div>
 
                             {/* Título y descripción de la página */}
-                            <div className="flex flex-col align-middle items-center justify-center">
+                            <div className="flex flex-col  justify-center">
                                 <h1 className="font-['Inter:Bold',sans-serif] font-bold text-[24px] text-[#363636] tracking-normal">
                                     {pageTitle}
                                 </h1>

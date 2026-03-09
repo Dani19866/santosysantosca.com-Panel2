@@ -22,6 +22,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Dashboard authProvider={true} />} />
           <Route path="/products" element={<Products authProvider={true} />} />
+          <Route path="/settings" element={<Settings authProvider={true} />} />
 
           <Route path="/live-production" element={<LiveProduction authProvider={true} />} />
           <Route path="/history-production" element={<HistoryProduction />} />
@@ -29,7 +30,6 @@ export default function App() {
           <Route path="/parameters" element={<Parameters />} />
           <Route path="/machines" element={<Machines />} />
           <Route path="/sensors" element={<Sensors />} />
-          <Route path="/settings" element={<Settings />} />
         </Routes>
       </BrowserRouter>
     </>

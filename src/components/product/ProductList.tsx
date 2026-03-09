@@ -1,6 +1,6 @@
 import { Eye, Package } from "lucide-react"
 import type { ViewMode, ViewProps } from "../interfaces/types"
-import { getProductType } from "../logic/productLogic"
+import { getProductType } from "../../logic/productLogic"
 
 const alignClassMap = {
   left: "text-left",

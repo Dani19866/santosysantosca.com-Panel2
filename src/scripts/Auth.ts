@@ -16,7 +16,7 @@ class Auth {
         this.session_duration_ms = 3600 * 1000 
     }
 
-    async login(username: string, password: string): Promise<boolean> {
+    async login(username: string, password: string): Promise<boolean | string> {
         const requestOptions = {
             method: 'POST',
             credentials: 'include' as RequestCredentials,
@@ -47,8 +47,10 @@ class Auth {
                 return false;
             }
 
-            // Manejar errores de red u otros errores inesperados
-        } catch (error) {
+            
+        } 
+        // Manejar errores de red u otros errores inesperados
+        catch (error) {
             this._handle_login_error(error);
             return false;
         }

@@ -10,9 +10,9 @@ import {
 } from "lucide-react"
 import type { Product } from "../interfaces/product.tsx"
 import Layout from "../layout/Layout.tsx"
-import AddProductModal from "../components/ProductAddItemModal.tsx"
-import ProductDetailModal from "../components/ProductDetailModal.tsx"
-import ProductList from "../components/ProductList.tsx"
+import AddProductModal from "../components/product/ProductAddItemModal.tsx"
+import ProductDetailModal from "../components/product/ProductDetailModal.tsx"
+import ProductList from "../components/product/ProductList.tsx"
 import SearchBar from "../components/SearchBar.tsx"
 import SearchResultsDropdown from "../components/SearchResultsDropdown.tsx"
 import {

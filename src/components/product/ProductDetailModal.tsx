@@ -1,6 +1,6 @@
 import { X } from "lucide-react"
-import type { Product } from "../interfaces/product"
-import { getProductType } from "../logic/productLogic"
+import type { Product } from "../../interfaces/product"
+import { getProductType } from "../../logic/productLogic"
 
 interface ProductDetailModalProps {
   isOpen: boolean
