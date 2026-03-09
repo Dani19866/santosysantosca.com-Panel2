@@ -60,6 +60,7 @@ export async function send_http_post(url: string, json: any): Promise<Response> 
 
 export async function send_http_patch(url: string, json: any): Promise<Response> {
     const jsonParsed = JSON.stringify(json)
+    
 
     const requestOptions = {
         method: 'PATCH',
