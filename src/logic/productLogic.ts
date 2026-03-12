@@ -71,7 +71,7 @@ export const mapProduct = (product: any): Product => ({
   unit: String(product.unit ?? ""),
   cost: toNumber(product.cost),
   currentStock: toNumber(product.currentStock ?? product.current_stock),
-  safetyStock: toNumber(product.safetyStock ?? product.safety_stock),
+  safety_stock_level: toNumber(product.safety_stock_level ?? product.safetyStock ?? product.safety_stock),
   isPurchased: toBoolean(product.isPurchased ?? product.is_purchased),
   isManufactured: toBoolean(product.isManufactured ?? product.is_manufactured),
   costHistory: Array.isArray(product.costHistory ?? product.cost_history)

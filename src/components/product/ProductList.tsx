@@ -1,5 +1,5 @@
 import { Eye, Package } from "lucide-react"
-import type { ViewMode, ViewProps } from "../interfaces/types"
+import type { ViewMode, ViewProps } from "../../interfaces/product"
 import { getProductType } from "../../logic/productLogic"
 
 const alignClassMap = {
@@ -20,7 +20,7 @@ function CardsView({ products, onViewDetails, getStockColor }: ViewProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {products.map((product) => {
-        const stockColor = getStockColor(product.currentStock, product.safetyStock)
+        const stockColor = getStockColor(product.currentStock, product.safety_stock_level)
 
         return (
           <div key={product.id} className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all overflow-hidden">
@@ -90,7 +90,7 @@ function TableView({ products, onViewDetails, getStockColor }: ViewProps) {
           </thead>
           <tbody className="divide-y divide-[#E5E7EB]">
             {products.map((product) => {
-              const stockColor = getStockColor(product.currentStock, product.safetyStock)
+              const stockColor = getStockColor(product.currentStock, product.safety_stock_level)
 
               return (
                 <tr key={product.id} className="hover:bg-[#F9FAFB] transition-colors">
@@ -136,7 +136,7 @@ function CompactView({ products, onViewDetails, getStockColor }: ViewProps) {
   return (
     <div className="space-y-2">
       {products.map((product) => {
-        const stockColor = getStockColor(product.currentStock, product.safetyStock)
+        const stockColor = getStockColor(product.currentStock, product.safety_stock_level)
 
         return (
           <div key={product.id} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all p-4">

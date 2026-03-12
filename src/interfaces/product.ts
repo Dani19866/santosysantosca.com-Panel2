@@ -24,7 +24,7 @@ export interface Product {
     unit: string;
     cost: number;
     currentStock: number;
-    safetyStock: number;
+    safety_stock_level: number;
     isPurchased: boolean;
     isManufactured: boolean;
     costHistory: CostHistory[];
