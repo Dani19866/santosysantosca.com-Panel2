@@ -123,7 +123,7 @@ export default function SettingsPage({ authProvider }: { authProvider: boolean }
 
     try {
       // Obtenemos los items
-      const items: SettingsCacheItem[] = await settingsLogic.updateCache(section, forceRefresh)
+      const items: SettingsCacheItem[] = await settingsLogic.getItems(section, forceRefresh)
 
       // Si hay función y hay datos
       if (updateStateFunction && items) {

@@ -328,7 +328,7 @@ class SettingsLogic {
      * actualizar los valores forzadamente, sin pasar por las verificaciones previas
      * de cache
      */
-    async updateCache(section: SettingsSection, forceRefresh = false): Promise<SettingsCacheItem[]> {
+    async getItems(section: SettingsSection, forceRefresh = false): Promise<SettingsCacheItem[]> {
         // Verificamos primero si hay datos guardados en el LocalStorage
         const dataCached: SettingsCacheItem[] = this.getValuesCache(section)
 

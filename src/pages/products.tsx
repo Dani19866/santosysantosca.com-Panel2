@@ -30,6 +30,10 @@ import {
   PRODUCTS_PER_PAGE,
   PRODUCTS_FETCH_SIZE
 } from "../logic/productLogic.ts"
+import type { Category } from "../interfaces/category.tsx"
+import type { Unit } from "../interfaces/unit.tsx"
+import type { SettingsSection } from "../scripts/URL.ts"
+import { settingsLogic, type SettingsCacheItem } from "../logic/settingsLogic.ts"
 
 interface SearchDropdownPosition {
   top: number
@@ -53,6 +57,10 @@ function ProductsContent() {
   const [productsFilteredError, setProductsFilteredError] = useState("")
   const [searchInDB, setSearchInDB] = useState(false)
   const [dropdownPosition, setDropdownPosition] = useState<SearchDropdownPosition>({ top: 0, left: 0, width: 0 })
+  const [categories, setCategories] = useState<Category[]>([])
+  const [units, setUnits] = useState<Unit[]>([])
+  const [isLoadingProductOptions, setIsLoadingProductOptions] = useState(false)
+  const [productOptionsError, setProductOptionsError] = useState("")
   const searchWrapperRef = useRef<HTMLDivElement | null>(null)
 
 
@@ -185,6 +193,66 @@ function ProductsContent() {
     setIsLoadingProductsFiltered(false)
   }
 
+
+  /**
+   * Función que obtiene los datos de categorías o unidades desde el backend para 
+   * mostrarlos en el modal de agregar producto.
+   * 
+   * @param tagKey Es la key que identifica si se quieren obtener categorías o 
+   * unidades. Puede ser "categories" o "units".
+   */
+  const getItemsFromTag = async (tagKey: SettingsSection) => {
+    // Obtenemos la key
+    const key: SettingsSection = tagKey
+
+    // Obtenemos los items
+    const items: SettingsCacheItem[] = await settingsLogic.getItems(key)
+
+    return items
+  }
+
+  /**
+   * Este hook crea una función y la ejecuta. Dicha función es capaz de crear
+   * un array de categoría y unidades mediante la obtención de datos desde el
+   * backend y mostrarla en el modal.
+   */
+  useEffect(() => {
+    if (!isAddProductModalOpen) {
+      return
+    }
+
+    // Creamos la función asíncrona
+    const loadProductOptions = async () => {
+      // Actualizamos los estados de carga y error
+      setIsLoadingProductOptions(true)
+      setProductOptionsError("")
+
+      try {
+        // Obtenemos los datos 
+        const [categoriesItems, unitsItems] = await Promise.all([
+          getItemsFromTag("categories"),
+          getItemsFromTag("units")
+        ])
+
+        // Actualizamos los estados de los datos
+        setCategories(categoriesItems.map((item) => ({ id: item.id, category: item.text })))
+        setUnits(unitsItems.map((item) => ({ id: item.id, unit: item.text })))
+      }
+      // Capturamos posibles errores
+      catch (error) {
+        console.error("No se pudieron cargar categorías y unidades:", error)
+        setProductOptionsError("No se pudieron cargar categorías y unidades.")
+      }
+      // Actualizamos el estado de carga
+      finally {
+        setIsLoadingProductOptions(false)
+      }
+    }
+
+    // Ejecuta la función asíncrona
+    loadProductOptions()
+  }, [isAddProductModalOpen])
+
   /**
    * Este hook es el encargado de manejar la lógica relacionada con la carga de productos
    * inicial. Se ejecuta cada vez que se cambia la página actual (currentPage) para cargar
@@ -270,7 +338,7 @@ function ProductsContent() {
     if (!searchInDB) {
       // Vacía resultados anteriores
       setProductsFiltered([])
-      
+
       // Limpia errores
       setProductsFilteredError("")
 
@@ -313,6 +381,8 @@ function ProductsContent() {
   }, [searchTerm, searchInDB])
 
   /**
+   * NO TOCAR
+   * 
    * Este hook se encarga de actualizar la posición del dropdown de resultados de búsqueda
    * cada vez que cambian el término de búsqueda o el estado de búsqueda en la base de datos.
    */
@@ -449,7 +519,14 @@ function ProductsContent() {
       {selectedProduct && (<ProductDetailModal isOpen={isDetailModalOpen} onClose={handleCloseDetailModal} product={selectedProduct} />)}
 
       {/* Modal para agregar un nuevo producto */}
-      <AddProductModal isOpen={isAddProductModalOpen} onClose={handleCloseAddModal} />
+      <AddProductModal
+        isOpen={isAddProductModalOpen}
+        onClose={handleCloseAddModal}
+        categories={categories}
+        units={units}
+        isLoadingOptions={isLoadingProductOptions}
+        optionsError={productOptionsError}
+      />
     </div>
   )
 }

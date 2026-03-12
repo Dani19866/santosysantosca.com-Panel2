@@ -2,13 +2,26 @@ import React, { useState } from 'react';
 import { X, Package, DollarSign, Tag, Ruler, Shield, Factory, ShoppingCart } from 'lucide-react';
 import { send_http_post } from '../../scripts/http.ts';
 import { api_save_product } from "../../scripts/URL.ts"
+import type { Category } from '../../interfaces/category.ts';
+import type { Unit } from '../../interfaces/unit.ts';
 
 interface AddProductModalProps {
   isOpen: boolean;
   onClose: () => void;
+  categories: Category[];
+  units: Unit[];
+  isLoadingOptions: boolean;
+  optionsError: string;
 }
 
-export default function AddProductModal({ isOpen, onClose }: AddProductModalProps) {
+export default function AddProductModal({
+  isOpen,
+  onClose,
+  categories,
+  units,
+  isLoadingOptions,
+  optionsError
+}: AddProductModalProps) {
   // Si el modal no está abierto, no renderizamos nada
   if (!isOpen) return null;
 
@@ -192,14 +205,16 @@ export default function AddProductModal({ isOpen, onClose }: AddProductModalProp
                       }`}
                   >
                     <option value="">Seleccionar categoría</option>
-                    <option value="Bisagras">Bisagras</option>
-                    <option value="Tornillería">Tornillería</option>
-                    <option value="Tuercas">Tuercas</option>
-                    <option value="Metales">Metales</option>
-                    <option value="Herramientas">Herramientas</option>
+                    {isLoadingOptions && <option value="" disabled>Cargando categorías...</option>}
+                    {!isLoadingOptions && categories.map((item) => (
+                      <option key={item.id} value={item.category}>{item.category}</option>
+                    ))}
                   </select>
                   {fieldErrors.category && (
                     <p className="mt-1 text-[11px] text-[#DC2626]">Rellena este campo por favor</p>
+                  )}
+                  {!isLoadingOptions && !optionsError && categories.length === 0 && (
+                    <p className="mt-1 text-[11px] text-[#9CA3AF]">No hay categorías disponibles</p>
                   )}
                 </div>
 
@@ -223,18 +238,23 @@ export default function AddProductModal({ isOpen, onClose }: AddProductModalProp
                         }`}
                     >
                       <option value="">Seleccionar unidad</option>
-                      <option value="Unidades">Unidades</option>
-                      <option value="Kilogramos">Kilogramos</option>
-                      <option value="Litros">Litros</option>
-                      <option value="Metros">Metros</option>
-                      <option value="Cajas">Cajas</option>
+                      {isLoadingOptions && <option value="" disabled>Cargando unidades...</option>}
+                      {!isLoadingOptions && units.map((item) => (
+                        <option key={item.id} value={item.unit}>{item.unit}</option>
+                      ))}
                     </select>
                   </div>
                   {fieldErrors.unit && (
                     <p className="mt-1 text-[11px] text-[#DC2626]">Rellena este campo por favor</p>
                   )}
+                  {!isLoadingOptions && !optionsError && units.length === 0 && (
+                    <p className="mt-1 text-[11px] text-[#9CA3AF]">No hay unidades disponibles</p>
+                  )}
                 </div>
               </div>
+              {optionsError && (
+                <p className="mt-2 text-[11px] text-[#DC2626]">{optionsError}</p>
+              )}
             </div>
 
             {/* Tipo de Producto */}
