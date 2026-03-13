@@ -6,7 +6,7 @@ import type { Unit } from "../../interfaces/unit"
 import { mapProduct } from "../../logic/productLogic"
 import { send_http_patch } from "../../scripts/http"
 import { api_modify_product } from "../../scripts/URL"
-import { 
+import {
   type CostTrend,
   type StockStatus,
   createFormDataFromProduct,
@@ -133,7 +133,7 @@ export default function ProductDetailModal({
 
     // Porcentaje de cantidad actual con respecto a lo seguro
     const percentage = (current / safety) * 100
-    
+
     // Estilos en base a la cantidad segura
     if (percentage >= HIGH_LEVEL) return { label: "Óptimo", color: "text-[#10c507]", bg: "bg-[#10c507]/10", border: "border-[#10c507]/40" }
     if (percentage >= MEDIUM_LEVEL) return { label: "Normal", color: "text-[#1e11d9]", bg: "bg-[#1e11d9]/10", border: "border-[#1e11d9]/40" }
@@ -240,7 +240,14 @@ export default function ProductDetailModal({
   }
 
   /**
+   * LÓGICA: Función que modifica los valores de un producto en la base de datos.
    * 
+   * Este obtiene todos los datos del formulario, los comprueba para confirmar que no hay 
+   * errores; si hay errores, entonces cancela la función. Luego, actualiza los estados
+   * de actualización y error para hacer reset. Por último, prepara el envío de la solicitud
+   * HTTP Patch al servidor con los datos necesarios, y luego confirma para actualizar 
+   * el producto en pantalla con los nuevos valores, o mostrar un error si es que no se 
+   * pudo actualizar.
    */
   const handleSave = async () => {
     // Parseamos el costo a formato Number
@@ -252,7 +259,7 @@ export default function ProductDetailModal({
     // Validamos los campos del formulario y guardamos los errores en un diccionario
     const nextErrors: ProductEditFieldErrors = {
       name: formData.name.trim() === "",                                              // Verificamos que no esté vacío
-      internal_code: formData.internal_code.trim() === "",                              // Verificamos que no esté vacío
+      internal_code: formData.internal_code.trim() === "",                            // Verificamos que no esté vacío
       category: formData.category.trim() === "",                                      // Verificamos que no esté vacío
       unit: formData.unit.trim() === "",                                              // Verificamos que no esté vacío
       cost_value: Number.isNaN(parsedCost) || parsedCost < 0,                         // Verificamos que sea un número, y que sea mayor que 0
@@ -277,12 +284,19 @@ export default function ProductDetailModal({
       const url = api_modify_product.replace("{id}", encodeURIComponent(product.id))
 
       // Se carga el payload
-      const payload: ProductFormData = {...formData}
+      const payload: ProductFormData = { ...formData }
 
+      // Envía la solicitud HTTP PATCH
       const response = await send_http_patch(url, payload)
-      const updatedProduct = response && typeof response === "object" && "id" in response
-        ? mapProduct(response)
-        : {
+
+      // Verifica si hay respuesta, si es un objeto y si tiene la propiedad ID
+      const updatedProduct = response && typeof response === "object" && "id"
+        in response ?
+        // Si se cumple, entonces se mapea la respuesta a un objeto tipo Product
+        mapProduct(response)
+        :
+        // Si no se cumple, igualmente se actualiza los valores en pantalla
+        {
           ...product,
           name: payload.name,
           internal_code: payload.internal_code,
@@ -294,11 +308,16 @@ export default function ProductDetailModal({
           is_manufactured: payload.is_manufactured,
         }
 
+      // Función que actualiza el producto en pantalla con los nuevos valores,
+      // y cierra el modo de edición
       onProductUpdated(updatedProduct)
+
+      // Se establece el estado de edición en false
       setIsEditing(false)
     } catch (error) {
       console.error("No se pudo actualizar el producto:", error)
       setSaveError("No se pudo guardar los cambios del producto.")
+
     } finally {
       setIsSaving(false)
     }
@@ -411,34 +430,34 @@ export default function ProductDetailModal({
               <p className="font-['Inter:Medium',sans-serif] font-medium text-[11px] text-[#363636]/60 uppercase tracking-wide mb-2">
                 Unidad de Medida
               </p>
-              {isEditing ? 
-              // Si se está editando...
-              (
-                <select
-                  value={formData.unit}
-                  onChange={(event) => {
-                    setFormData({ ...formData, unit: event.target.value })
-                    if (fieldErrors.unit) {
-                      setFieldErrors({ ...fieldErrors, unit: false })
-                    }
-                  }}
-                  className={`w-full px-3 py-2 rounded-lg border bg-white text-[14px] text-[#363636] focus:outline-none focus:ring-2 ${fieldErrors.unit
-                    ? "border-[#DC2626] focus:ring-[#DC2626]"
-                    : "border-[#E5E7EB] focus:ring-[#1e11d9]"
-                    }`}
-                >
-                  {unitOptions.map((item) => (
-                    <option key={item.id} value={item.unit}>
-                      {item.unit}
-                    </option>
-                  ))}
-                </select>
-              ) 
-              : 
-              // Si no se está editando, solo se muestra
-              (
-                <p className="font-['Inter:Bold',sans-serif] font-bold text-[15px] text-[#363636]">{product.unit}</p>
-              )}
+              {isEditing ?
+                // Si se está editando...
+                (
+                  <select
+                    value={formData.unit}
+                    onChange={(event) => {
+                      setFormData({ ...formData, unit: event.target.value })
+                      if (fieldErrors.unit) {
+                        setFieldErrors({ ...fieldErrors, unit: false })
+                      }
+                    }}
+                    className={`w-full px-3 py-2 rounded-lg border bg-white text-[14px] text-[#363636] focus:outline-none focus:ring-2 ${fieldErrors.unit
+                      ? "border-[#DC2626] focus:ring-[#DC2626]"
+                      : "border-[#E5E7EB] focus:ring-[#1e11d9]"
+                      }`}
+                  >
+                    {unitOptions.map((item) => (
+                      <option key={item.id} value={item.unit}>
+                        {item.unit}
+                      </option>
+                    ))}
+                  </select>
+                )
+                :
+                // Si no se está editando, solo se muestra
+                (
+                  <p className="font-['Inter:Bold',sans-serif] font-bold text-[15px] text-[#363636]">{product.unit}</p>
+                )}
             </div>
 
             {/* Categoría */}
@@ -672,31 +691,31 @@ export default function ProductDetailModal({
           </div>
 
           {/* Mensajes de error y carga */}
-          {isEditing && 
-          (
-            <div className="space-y-2">
-              {(fieldErrors.name || fieldErrors.internal_code || fieldErrors.category || fieldErrors.unit || fieldErrors.cost_value || fieldErrors.safety_stock_level) && (
-                <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#c50707]">
-                  Verifica los campos obligatorios y que los valores numéricos sean mayores o iguales a 0.
-                </p>
-              )}
-              {isLoadingOptions && (
-                <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#6B7280]">
-                  Cargando categorías y unidades...
-                </p>
-              )}
-              {optionsError && (
-                <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#c50707]">
-                  {optionsError}
-                </p>
-              )}
-              {saveError && (
-                <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#c50707]">
-                  {saveError}
-                </p>
-              )}
-            </div>
-          )}
+          {isEditing &&
+            (
+              <div className="space-y-2">
+                {(fieldErrors.name || fieldErrors.internal_code || fieldErrors.category || fieldErrors.unit || fieldErrors.cost_value || fieldErrors.safety_stock_level) && (
+                  <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#c50707]">
+                    Verifica los campos obligatorios y que los valores numéricos sean mayores o iguales a 0.
+                  </p>
+                )}
+                {isLoadingOptions && (
+                  <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#6B7280]">
+                    Cargando categorías y unidades...
+                  </p>
+                )}
+                {optionsError && (
+                  <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#c50707]">
+                    {optionsError}
+                  </p>
+                )}
+                {saveError && (
+                  <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#c50707]">
+                    {saveError}
+                  </p>
+                )}
+              </div>
+            )}
         </div>
 
         {/* Botones de acciones: Editar, cancelar, guardar y salir */}
