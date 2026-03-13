@@ -1,6 +1,5 @@
 import { Eye, Package } from "lucide-react"
 import type { ViewMode, ViewProps } from "../../interfaces/product"
-import { getProductType } from "../../logic/productLogic"
 
 const alignClassMap = {
   left: "text-left",
@@ -50,12 +49,6 @@ function CardsView({ products, onViewDetails, getStockColor }: ViewProps) {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-lg bg-[#1e11d9]/10 font-['Inter:Bold',sans-serif] font-bold text-[11px] text-[#1e11d9]">
-                  {getProductType(product)}
-                </span>
-              </div>
-
               <button
                 onClick={() => onViewDetails(product)}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1e11d9]/10 text-[#1e11d9] rounded-lg hover:bg-[#1e11d9]/20 transition-colors"
@@ -84,7 +77,6 @@ function TableView({ products, onViewDetails, getStockColor }: ViewProps) {
               <TableHeader>Producto</TableHeader>
               <TableHeader>Categoría</TableHeader>
               <TableHeader>Stock</TableHeader>
-              <TableHeader>Tipo</TableHeader>
               <TableHeader align="center">Acciones</TableHeader>
             </tr>
           </thead>
@@ -107,9 +99,6 @@ function TableView({ products, onViewDetails, getStockColor }: ViewProps) {
                     <span className={`font-['Inter:Bold',sans-serif] font-bold text-[14px] ${stockColor}`}>
                       {product.currentStock.toLocaleString()}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[#363636]">
-                    {getProductType(product)}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <button
@@ -158,10 +147,6 @@ function CompactView({ products, onViewDetails, getStockColor }: ViewProps) {
                 <div className="flex flex-wrap items-center gap-3 text-[13px]">
                   <span className="font-['Inter:Medium',sans-serif] font-medium text-[#9CA3AF]">
                     {product.category}
-                  </span>
-                  <span className="text-[#E5E7EB]">•</span>
-                  <span className="font-['Inter:Medium',sans-serif] font-medium text-[#9CA3AF]">
-                    {getProductType(product)}
                   </span>
                   <span className="text-[#E5E7EB]">•</span>
                   <span className={`font-['Inter:Bold',sans-serif] font-bold ${stockColor}`}>
