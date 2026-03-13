@@ -93,6 +93,15 @@ function ProductsContent() {
     setSelectedProduct(null)
   }
 
+  /**
+   * Función que maneja la actualización de un producto después de editarlo.
+   * 
+   * Actualiza los valores del producto en el estado de productos. Busca por
+   * ID y sustituye el viejo por el actualizado.
+   * 
+   * Además, actualiza el producto seleccionado para que el modal de detalles muestre
+   * los últimos cambios.
+   */
   const handleProductUpdated = (updatedProduct: Product) => {
     setProducts((currentProducts) => currentProducts.map((item) => (item.id === updatedProduct.id ? updatedProduct : item)))
     setProductsFiltered((currentProducts) => currentProducts.map((item) => (item.id === updatedProduct.id ? updatedProduct : item)))
