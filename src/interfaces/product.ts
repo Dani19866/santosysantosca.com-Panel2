@@ -22,7 +22,7 @@ export interface Product {
     internalCode: string;
     category: string;
     unit: string;
-    cost: number;
+    cost_value: number;
     currentStock: number;
     safety_stock_level: number;
     isPurchased: boolean;

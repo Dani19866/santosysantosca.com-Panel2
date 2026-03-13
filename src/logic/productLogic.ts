@@ -3,6 +3,23 @@ import type {
   PreviousPageCache 
 } from "../interfaces/product"
 
+// Interfaz de la estructura de datos del formulario de edición de producto
+export interface ProductEditFormData {
+  name: string
+  internalCode: string
+  category: string
+  unit: string
+  cost_value: string
+  safety_stock_level: string
+  is_purchased: boolean
+  is_manufactured: boolean
+}
+
+// Niveles de stock para la función getStockColor
+export const HIGH_LEVEL = 150
+export const MEDIUM_LEVEL = 100
+export const LOW_LEVEL = 50
+
 export const PREVIOUS_PAGE_CACHE_KEY: string = "products_previous_page_cache"
 export const PRODUCTS_PER_PAGE: number = 20
 export const PRODUCTS_FETCH_SIZE: number = PRODUCTS_PER_PAGE + 1
@@ -12,10 +29,6 @@ export const getStockColor = (current: number, safety: number): string => {
 
   const percentage = (current / safety) * 100
   return percentage >= 100 ? "text-[#10c507]" : "text-[#c50707]"
-}
-
-export const getProductType = (product: Product): string => {
-  return product.isPurchased ? "Materia prima" : "Fabricado"
 }
 
 /**
@@ -69,7 +82,7 @@ export const mapProduct = (product: any): Product => ({
   internalCode: String(product.internalCode ?? product.internal_code ?? ""),
   category: String(product.category ?? ""),
   unit: String(product.unit ?? ""),
-  cost: toNumber(product.cost),
+  cost_value: toNumber(product.cost_value ?? product.cost ?? 0),
   currentStock: toNumber(product.currentStock ?? product.current_stock),
   safety_stock_level: toNumber(product.safety_stock_level ?? product.safetyStock ?? product.safety_stock),
   isPurchased: toBoolean(product.isPurchased ?? product.is_purchased),
@@ -138,3 +151,18 @@ export const savePreviousPageCache = (cache: PreviousPageCache) => {
     console.error("No se pudo guardar caché de productos:", error)
   }
 }
+
+/**
+ * LÓGICA: Creación de un objeto ProductEditFormData a partir de un objeto Product
+ */
+export const createFormDataFromProduct = (item: Product): ProductEditFormData => ({
+  name: item.name,
+  internalCode: item.internalCode,
+  category: item.category,
+  unit: item.unit,
+  cost_value: String(item.cost_value),
+  safety_stock_level: String(item.safety_stock_level),
+  is_purchased: item.isPurchased,
+  is_manufactured: item.isManufactured,
+})
+

@@ -93,6 +93,12 @@ function ProductsContent() {
     setSelectedProduct(null)
   }
 
+  const handleProductUpdated = (updatedProduct: Product) => {
+    setProducts((currentProducts) => currentProducts.map((item) => (item.id === updatedProduct.id ? updatedProduct : item)))
+    setProductsFiltered((currentProducts) => currentProducts.map((item) => (item.id === updatedProduct.id ? updatedProduct : item)))
+    setSelectedProduct(updatedProduct)
+  }
+
   // Funciones para abrir y cerrar el modal de agregar producto
   const handleOpenAddModal = () => setIsAddProductModalOpen(true)
   const handleCloseAddModal = () => setIsAddProductModalOpen(false)
@@ -217,7 +223,7 @@ function ProductsContent() {
    * backend y mostrarla en el modal.
    */
   useEffect(() => {
-    if (!isAddProductModalOpen) {
+    if (!isAddProductModalOpen && !isDetailModalOpen) {
       return
     }
 
@@ -251,7 +257,7 @@ function ProductsContent() {
 
     // Ejecuta la función asíncrona
     loadProductOptions()
-  }, [isAddProductModalOpen])
+  }, [isAddProductModalOpen, isDetailModalOpen])
 
   /**
    * Este hook es el encargado de manejar la lógica relacionada con la carga de productos
@@ -516,7 +522,18 @@ function ProductsContent() {
       </div>
 
       {/* Abrir un submenu donde se detallan datos de un producto específico */}
-      {selectedProduct && (<ProductDetailModal isOpen={isDetailModalOpen} onClose={handleCloseDetailModal} product={selectedProduct} />)}
+      {selectedProduct && (
+        <ProductDetailModal
+          isOpen={isDetailModalOpen}
+          onClose={handleCloseDetailModal}
+          product={selectedProduct}
+          categories={categories}
+          units={units}
+          isLoadingOptions={isLoadingProductOptions}
+          optionsError={productOptionsError}
+          onProductUpdated={handleProductUpdated}
+        />
+      )}
 
       {/* Modal para agregar un nuevo producto */}
       <AddProductModal
