@@ -7,12 +7,14 @@ import { mapProduct } from "../../logic/productLogic"
 import { send_http_patch } from "../../scripts/http"
 import { api_modify_product } from "../../scripts/URL"
 import { 
-  type ProductEditFormData, 
+  type CostTrend,
+  type StockStatus,
   createFormDataFromProduct,
   HIGH_LEVEL,
   MEDIUM_LEVEL,
-  LOW_LEVEL
+  LOW_LEVEL,
 } from "../../logic/productLogic"
+import type { ProductFormData } from "../../interfaces/product"
 
 // COMPONENTE: Interfaz de propiedades para el componente ProductDetailModal (este componente)
 interface ProductDetailModalProps {
@@ -29,7 +31,7 @@ interface ProductDetailModalProps {
 // IDENTIFICACIÓN: Interfaz de errores de los campos del formulario de edición de producto
 interface ProductEditFieldErrors {
   name: boolean
-  internalCode: boolean
+  internal_code: boolean
   category: boolean
   unit: boolean
   cost_value: boolean
@@ -40,7 +42,7 @@ interface ProductEditFieldErrors {
 // UTILIDAD: Solo resetea los valores de errores
 const INITIAL_FIELD_ERRORS: ProductEditFieldErrors = {
   name: false,
-  internalCode: false,
+  internal_code: false,
   category: false,
   unit: false,
   cost_value: false,
@@ -64,7 +66,7 @@ export default function ProductDetailModal({
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState("")
   const [fieldErrors, setFieldErrors] = useState<ProductEditFieldErrors>(INITIAL_FIELD_ERRORS)
-  const [formData, setFormData] = useState<ProductEditFormData>(() => createFormDataFromProduct(product))
+  const [formData, setFormData] = useState<ProductFormData>(() => createFormDataFromProduct(product))
 
   /**
    * LÓGICA: Hook que permite reiniciar el estado del formulario cada vez que se 
@@ -121,9 +123,9 @@ export default function ProductDetailModal({
    * 
    * @param current Recibe la cantidad de producto actual en la base de datos
    * @param safety Recibe la cantidad de nivel seguro en la base de datos
-   * @returns Retorna el estilo el cual se utilizará para adornar el contenedor
+   * @returns Retorna un objeto StockStatus
    */
-  const getStockStatus = (current: number, safety: number) => {
+  const getStockStatus = (current: number, safety: number): StockStatus => {
     // Si no hay nivel de seguridad
     if (safety <= 0) {
       return { label: "Sin referencia", color: "text-[#9CA3AF]", bg: "bg-[#9CA3AF]/10", border: "border-[#9CA3AF]/40" }
@@ -140,26 +142,51 @@ export default function ProductDetailModal({
   }
 
   /**
-   * 
-   * @returns 
+   * Variable que guarda el diccionario de estilos para mostrar el estado de stock
+   * del producto.
    */
-  const getCostTrend = () => {
-    if (product.costHistory.length < 2) return null
-    const latest = product.costHistory[product.costHistory.length - 1].cost
-    const previous = product.costHistory[product.costHistory.length - 2].cost
+  const stockStatus = getStockStatus(product.current_stock, product.safety_stock_level)
 
+  /**
+   * LÓGICA: Esta función calcula a través del arreglo de datos de historial de costo,
+   * la tendencia de costo del producto.
+   * 
+   * Utiliza el último y el penúltimo costo registrado para calcular el cambio 
+   * porcentual entre ambos, y así determinar si el costo ha aumentado, disminuido o s
+   * e ha mantenido igual.
+   * 
+   * @returns Retorna un objeto CostTrend
+   */
+  const getCostTrend = (): CostTrend => {
+    // Si hay menos de 2 items (1, 0), entonces no se muestra ningún gráfico
+    if (product.cost_history.length < 2) return null
+
+    // Se obtiene el último costo
+    const latest = product.cost_history[product.cost_history.length - 1].cost
+
+    // Se obtiene el penúltimo costo
+    const previous = product.cost_history[product.cost_history.length - 2].cost
+
+    // Si el penúltimo costo almacenado es 0, entonces quiere decir que no hubo
+    // ningún cambio de tendencia, o fue un error de guardado
     if (previous === 0) {
       return { change: "0.0", isIncrease: latest > 0 }
     }
 
+    // Se calcula el cambio porcentual entre el último costo y el penúltimo costo
     const change = ((latest - previous) / previous) * 100
+
+    // Retorna un diccionario del valor de cambio porcentual, y si aumentó o 
+    // disminuyó el costo
     return {
       change: Math.abs(change).toFixed(1),
       isIncrease: change > 0,
     }
   }
 
-  const stockStatus = getStockStatus(product.currentStock, product.safety_stock_level)
+  /**
+   * Variable que almacena el resultado del cálculo de la tendencia de costo del producto
+   */
   const trend = getCostTrend()
 
   /**
@@ -216,40 +243,41 @@ export default function ProductDetailModal({
    * 
    */
   const handleSave = async () => {
+    // Parseamos el costo a formato Number
     const parsedCost = Number(formData.cost_value)
+
+    // Parseamos el stock seguro a formato Number
     const parsedSafetyStock = Number(formData.safety_stock_level)
 
+    // Validamos los campos del formulario y guardamos los errores en un diccionario
     const nextErrors: ProductEditFieldErrors = {
-      name: formData.name.trim() === "",
-      internalCode: formData.internalCode.trim() === "",
-      category: formData.category.trim() === "",
-      unit: formData.unit.trim() === "",
-      cost_value: Number.isNaN(parsedCost) || parsedCost < 0,
-      safety_stock_level: Number.isNaN(parsedSafetyStock) || parsedSafetyStock < 0,
-      productType: !formData.is_purchased && !formData.is_manufactured,
+      name: formData.name.trim() === "",                                              // Verificamos que no esté vacío
+      internal_code: formData.internal_code.trim() === "",                              // Verificamos que no esté vacío
+      category: formData.category.trim() === "",                                      // Verificamos que no esté vacío
+      unit: formData.unit.trim() === "",                                              // Verificamos que no esté vacío
+      cost_value: Number.isNaN(parsedCost) || parsedCost < 0,                         // Verificamos que sea un número, y que sea mayor que 0
+      safety_stock_level: Number.isNaN(parsedSafetyStock) || parsedSafetyStock < 0,   // Verificamos que sea un número, y que sea mayor que 0
+      productType: !formData.is_purchased && !formData.is_manufactured,               // Verificamos que al menos un tipo de producto esté seleccionado
     }
 
+    // Guardamos los errores en el estado para mostrarlos en pantalla
     setFieldErrors(nextErrors)
 
+    // Si hay algún error, entonces no se guarda ningún dato
     if (Object.values(nextErrors).some(Boolean)) {
       return
     }
 
+    // Se actualizan los estados de cambio y actualización de base de datos
     setIsSaving(true)
     setSaveError("")
 
     try {
+      // Se obtiene la URL de modificación, y se reemplaza por el id del producto
       const url = api_modify_product.replace("{id}", encodeURIComponent(product.id))
-      const payload = {
-        name: formData.name.trim(),
-        internal_code: formData.internalCode.trim(),
-        category: formData.category,
-        unit: formData.unit,
-        cost_value: parsedCost,
-        safety_stock_level: parsedSafetyStock,
-        is_purchased: formData.is_purchased,
-        is_manufactured: formData.is_manufactured,
-      }
+
+      // Se carga el payload
+      const payload: ProductFormData = {...formData}
 
       const response = await send_http_patch(url, payload)
       const updatedProduct = response && typeof response === "object" && "id" in response
@@ -257,13 +285,13 @@ export default function ProductDetailModal({
         : {
           ...product,
           name: payload.name,
-          internalCode: payload.internal_code,
+          internal_code: payload.internal_code,
           category: payload.category,
           unit: payload.unit,
           cost_value: payload.cost_value,
           safety_stock_level: payload.safety_stock_level,
-          isPurchased: payload.is_purchased,
-          isManufactured: payload.is_manufactured,
+          is_purchased: payload.is_purchased,
+          is_manufactured: payload.is_manufactured,
         }
 
       onProductUpdated(updatedProduct)
@@ -304,14 +332,14 @@ export default function ProductDetailModal({
                   <div className="space-y-2">
                     <input
                       type="text"
-                      value={formData.internalCode}
+                      value={formData.internal_code}
                       onChange={(event) => {
-                        setFormData({ ...formData, internalCode: event.target.value })
-                        if (fieldErrors.internalCode) {
-                          setFieldErrors({ ...fieldErrors, internalCode: false })
+                        setFormData({ ...formData, internal_code: event.target.value })
+                        if (fieldErrors.internal_code) {
+                          setFieldErrors({ ...fieldErrors, internal_code: false })
                         }
                       }}
-                      className={`w-full rounded-lg border px-3 py-2 text-[13px] bg-white/15 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 ${fieldErrors.internalCode
+                      className={`w-full rounded-lg border px-3 py-2 text-[13px] bg-white/15 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 ${fieldErrors.internal_code
                         ? "border-[#DC2626] focus:ring-[#DC2626]"
                         : "border-white/30 focus:ring-white/60"
                         }`}
@@ -339,7 +367,7 @@ export default function ProductDetailModal({
                 (
                   <>
                     <span className="font-['Inter:Medium',sans-serif] font-medium text-[13px] text-white/70">
-                      {product.internalCode}
+                      {product.internal_code}
                     </span>
                     <h2 className="mt-1 font-['Inter:Bold',sans-serif] font-bold text-[20px] md:text-[22px] text-white wrap-break-word">
                       {product.name}
@@ -363,7 +391,7 @@ export default function ProductDetailModal({
                   Stock Actual
                 </p>
                 <p className={`font-['Inter:Bold',sans-serif] font-bold text-[30px] md:text-[36px] ${stockStatus.color}`}>
-                  {product.currentStock.toLocaleString()}
+                  {product.current_stock.toLocaleString()}
                 </p>
               </div>
 
@@ -454,7 +482,7 @@ export default function ProductDetailModal({
                   min="0"
                   value={formData.safety_stock_level}
                   onChange={(event) => {
-                    setFormData({ ...formData, safety_stock_level: event.target.value })
+                    setFormData({ ...formData, safety_stock_level: Number(event.target.value) })
                     if (fieldErrors.safety_stock_level) {
                       setFieldErrors({ ...fieldErrors, safety_stock_level: false })
                     }
@@ -483,7 +511,7 @@ export default function ProductDetailModal({
                       min="0"
                       value={formData.cost_value}
                       onChange={(event) => {
-                        setFormData({ ...formData, cost_value: event.target.value })
+                        setFormData({ ...formData, cost_value: Number(event.target.value) })
                         if (fieldErrors.cost_value) {
                           setFieldErrors({ ...fieldErrors, cost_value: false })
                         }
@@ -533,14 +561,14 @@ export default function ProductDetailModal({
                   </tr>
                 </thead>
                 <tbody>
-                  {product.costHistory.length === 0 && (
+                  {product.cost_history.length === 0 && (
                     <tr>
                       <td colSpan={3} className="px-4 py-4 text-center font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#9CA3AF]">
                         Sin historial registrado
                       </td>
                     </tr>
                   )}
-                  {product.costHistory.map((entry, index) => (
+                  {product.cost_history.map((entry, index) => (
                     <tr
                       key={`${entry.date}-${index}`}
                       className="border-b border-[#E5E7EB] last:border-0 hover:bg-[#F9FAFB] transition-colors"
@@ -566,13 +594,13 @@ export default function ProductDetailModal({
             <h3 className="font-['Inter:Bold',sans-serif] font-bold text-[14px] text-[#363636] mb-3">Capacidades del Producto</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div
-                className={`flex items-center justify-between gap-3 px-4 py-3 border-2 rounded-lg ${(!isEditing ? product.isManufactured : formData.is_manufactured)
+                className={`flex items-center justify-between gap-3 px-4 py-3 border-2 rounded-lg ${(!isEditing ? product.is_manufactured : formData.is_manufactured)
                   ? "border-[#1e11d9] bg-[#1e11d9]/5"
                   : "border-[#E5E7EB] bg-[#F9FAFB]"
                   }`}
               >
                 <div className="flex items-center gap-2">
-                  <Factory className={`size-4 ${(!isEditing ? product.isManufactured : formData.is_manufactured) ? "text-[#1e11d9]" : "text-[#9CA3AF]"}`} strokeWidth={2.5} />
+                  <Factory className={`size-4 ${(!isEditing ? product.is_manufactured : formData.is_manufactured) ? "text-[#1e11d9]" : "text-[#9CA3AF]"}`} strokeWidth={2.5} />
                   <span className="font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[#363636]">Se puede fabricar</span>
                 </div>
                 {isEditing ? (
@@ -590,24 +618,24 @@ export default function ProductDetailModal({
                   />
                 ) : (
                   <span
-                    className={`px-2.5 py-1 rounded-full font-['Inter:Bold',sans-serif] font-bold text-[11px] ${product.isManufactured
+                    className={`px-2.5 py-1 rounded-full font-['Inter:Bold',sans-serif] font-bold text-[11px] ${product.is_manufactured
                       ? "bg-[#1e11d9]/15 text-[#1e11d9]"
                       : "bg-[#E5E7EB] text-[#6B7280]"
                       }`}
                   >
-                    {product.isManufactured ? "Sí" : "No"}
+                    {product.is_manufactured ? "Sí" : "No"}
                   </span>
                 )}
               </div>
 
               <div
-                className={`flex items-center justify-between gap-3 px-4 py-3 border-2 rounded-lg ${(!isEditing ? product.isPurchased : formData.is_purchased)
+                className={`flex items-center justify-between gap-3 px-4 py-3 border-2 rounded-lg ${(!isEditing ? product.is_purchased : formData.is_purchased)
                   ? "border-[#10c507] bg-[#10c507]/5"
                   : "border-[#E5E7EB] bg-[#F9FAFB]"
                   }`}
               >
                 <div className="flex items-center gap-2">
-                  <ShoppingCart className={`size-4 ${(!isEditing ? product.isPurchased : formData.is_purchased) ? "text-[#10c507]" : "text-[#9CA3AF]"}`} strokeWidth={2.5} />
+                  <ShoppingCart className={`size-4 ${(!isEditing ? product.is_purchased : formData.is_purchased) ? "text-[#10c507]" : "text-[#9CA3AF]"}`} strokeWidth={2.5} />
                   <span className="font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[#363636]">Se puede comprar</span>
                 </div>
                 {isEditing ? (
@@ -625,12 +653,12 @@ export default function ProductDetailModal({
                   />
                 ) : (
                   <span
-                    className={`px-2.5 py-1 rounded-full font-['Inter:Bold',sans-serif] font-bold text-[11px] ${product.isPurchased
+                    className={`px-2.5 py-1 rounded-full font-['Inter:Bold',sans-serif] font-bold text-[11px] ${product.is_purchased
                       ? "bg-[#10c507]/15 text-[#10c507]"
                       : "bg-[#E5E7EB] text-[#6B7280]"
                       }`}
                   >
-                    {product.isPurchased ? "Sí" : "No"}
+                    {product.is_purchased ? "Sí" : "No"}
                   </span>
                 )}
               </div>
@@ -647,7 +675,7 @@ export default function ProductDetailModal({
           {isEditing && 
           (
             <div className="space-y-2">
-              {(fieldErrors.name || fieldErrors.internalCode || fieldErrors.category || fieldErrors.unit || fieldErrors.cost_value || fieldErrors.safety_stock_level) && (
+              {(fieldErrors.name || fieldErrors.internal_code || fieldErrors.category || fieldErrors.unit || fieldErrors.cost_value || fieldErrors.safety_stock_level) && (
                 <p className="font-['Inter:Medium',sans-serif] font-medium text-[12px] text-[#c50707]">
                   Verifica los campos obligatorios y que los valores numéricos sean mayores o iguales a 0.
                 </p>

@@ -19,7 +19,7 @@ function CardsView({ products, onViewDetails, getStockColor }: ViewProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
       {products.map((product) => {
-        const stockColor = getStockColor(product.currentStock, product.safety_stock_level)
+        const stockColor = getStockColor(product.current_stock, product.safety_stock_level)
 
         return (
           <div key={product.id} className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all overflow-hidden">
@@ -30,7 +30,7 @@ function CardsView({ products, onViewDetails, getStockColor }: ViewProps) {
             <div className="p-4 space-y-3">
               <div>
                 <p className="font-['Inter:Medium',sans-serif] font-medium text-[11px] text-[#9CA3AF] uppercase mb-1">
-                  {product.internalCode}
+                  {product.internal_code}
                 </p>
                 <h3 className="font-['Inter:Bold',sans-serif] font-bold text-[14px] text-[#363636] line-clamp-2 mb-1">
                   {product.name}
@@ -45,7 +45,7 @@ function CardsView({ products, onViewDetails, getStockColor }: ViewProps) {
                   Stock Actual
                 </p>
                 <p className={`font-['Inter:Bold',sans-serif] font-bold text-[20px] ${stockColor}`}>
-                  {product.currentStock.toLocaleString()}
+                  {product.current_stock.toLocaleString()}
                 </p>
               </div>
 
@@ -82,12 +82,12 @@ function TableView({ products, onViewDetails, getStockColor }: ViewProps) {
           </thead>
           <tbody className="divide-y divide-[#E5E7EB]">
             {products.map((product) => {
-              const stockColor = getStockColor(product.currentStock, product.safety_stock_level)
+              const stockColor = getStockColor(product.current_stock, product.safety_stock_level)
 
               return (
                 <tr key={product.id} className="hover:bg-[#F9FAFB] transition-colors">
                   <td className="px-6 py-4 font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[#9CA3AF]">
-                    {product.internalCode}
+                    {product.internal_code}
                   </td>
                   <td className="px-6 py-4 font-['Inter:Bold',sans-serif] font-bold text-[13px] text-[#363636]">
                     {product.name}
@@ -97,7 +97,7 @@ function TableView({ products, onViewDetails, getStockColor }: ViewProps) {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`font-['Inter:Bold',sans-serif] font-bold text-[14px] ${stockColor}`}>
-                      {product.currentStock.toLocaleString()}
+                      {product.current_stock.toLocaleString()}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -125,7 +125,7 @@ function CompactView({ products, onViewDetails, getStockColor }: ViewProps) {
   return (
     <div className="space-y-2">
       {products.map((product) => {
-        const stockColor = getStockColor(product.currentStock, product.safety_stock_level)
+        const stockColor = getStockColor(product.current_stock, product.safety_stock_level)
 
         return (
           <div key={product.id} className="bg-white rounded-lg border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all p-4">
@@ -137,7 +137,7 @@ function CompactView({ products, onViewDetails, getStockColor }: ViewProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <span className="font-['Inter:Bold',sans-serif] font-bold text-[12px] text-[#9CA3AF]">
-                    {product.internalCode}
+                    {product.internal_code}
                   </span>
                   <span className="text-[#E5E7EB]">•</span>
                   <span className="font-['Inter:Bold',sans-serif] font-bold text-[14px] text-[#363636]">
@@ -150,7 +150,7 @@ function CompactView({ products, onViewDetails, getStockColor }: ViewProps) {
                   </span>
                   <span className="text-[#E5E7EB]">•</span>
                   <span className={`font-['Inter:Bold',sans-serif] font-bold ${stockColor}`}>
-                    Stock: {product.currentStock.toLocaleString()}
+                    Stock: {product.current_stock.toLocaleString()}
                   </span>
                 </div>
               </div>

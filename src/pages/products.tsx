@@ -79,7 +79,7 @@ function ProductsContent() {
 
     // Buscar en la página productos ya cargados
     return products.filter((product) => {
-      return (product.internalCode.toLowerCase().includes(searchLower) || product.name.toLowerCase().includes(searchLower))
+      return (product.internal_code.toLowerCase().includes(searchLower) || product.name.toLowerCase().includes(searchLower))
     })
   }, [products, searchTerm])
 

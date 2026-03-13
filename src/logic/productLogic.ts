@@ -1,18 +1,20 @@
 import type { 
   Product, 
-  PreviousPageCache 
+  PreviousPageCache,
+  ProductFormData
 } from "../interfaces/product"
 
-// Interfaz de la estructura de datos del formulario de edición de producto
-export interface ProductEditFormData {
-  name: string
-  internalCode: string
-  category: string
-  unit: string
-  cost_value: string
-  safety_stock_level: string
-  is_purchased: boolean
-  is_manufactured: boolean
+// Interfaz de la estructura de datos del cálculo de tendencia de costo
+export type CostTrend = {
+  change: string
+  isIncrease: boolean
+} | null
+
+export type StockStatus = {
+  label: string
+  color: string
+  bg: string
+  border: string
 }
 
 // Niveles de stock para la función getStockColor
@@ -79,15 +81,15 @@ export const getStockColor = (current: number, safety: number): string => {
 export const mapProduct = (product: any): Product => ({
   id: String(product.id ?? ""),
   name: String(product.name ?? ""),
-  internalCode: String(product.internalCode ?? product.internal_code ?? ""),
+  internal_code: String(product.internalCode ?? product.internal_code ?? ""),
   category: String(product.category ?? ""),
   unit: String(product.unit ?? ""),
   cost_value: toNumber(product.cost_value ?? product.cost ?? 0),
-  currentStock: toNumber(product.currentStock ?? product.current_stock),
+  current_stock: toNumber(product.currentStock ?? product.current_stock),
   safety_stock_level: toNumber(product.safety_stock_level ?? product.safetyStock ?? product.safety_stock),
-  isPurchased: toBoolean(product.isPurchased ?? product.is_purchased),
-  isManufactured: toBoolean(product.isManufactured ?? product.is_manufactured),
-  costHistory: Array.isArray(product.costHistory ?? product.cost_history)
+  is_purchased: toBoolean(product.isPurchased ?? product.is_purchased),
+  is_manufactured: toBoolean(product.isManufactured ?? product.is_manufactured),
+  cost_history: Array.isArray(product.costHistory ?? product.cost_history)
     ? (product.costHistory ?? product.cost_history).map((entry: any) => ({
       date: String(entry.date ?? ""),
       description: String(entry.description ?? ""),
@@ -155,14 +157,14 @@ export const savePreviousPageCache = (cache: PreviousPageCache) => {
 /**
  * LÓGICA: Creación de un objeto ProductEditFormData a partir de un objeto Product
  */
-export const createFormDataFromProduct = (item: Product): ProductEditFormData => ({
+export const createFormDataFromProduct = (item: Product): ProductFormData => ({
   name: item.name,
-  internalCode: item.internalCode,
+  internal_code: item.internal_code,
   category: item.category,
   unit: item.unit,
-  cost_value: String(item.cost_value),
-  safety_stock_level: String(item.safety_stock_level),
-  is_purchased: item.isPurchased,
-  is_manufactured: item.isManufactured,
+  cost_value: Number(item.cost_value),
+  safety_stock_level: Number(item.safety_stock_level),
+  is_purchased: Boolean(item.is_purchased),
+  is_manufactured: Boolean(item.is_manufactured),
 })
 

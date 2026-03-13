@@ -19,19 +19,29 @@ export interface CostHistory {
 export interface Product {
     id: string;
     name: string;
-    internalCode: string;
+    internal_code: string;
     category: string;
     unit: string;
     cost_value: number;
-    currentStock: number;
+    current_stock: number;
     safety_stock_level: number;
-    isPurchased: boolean;
-    isManufactured: boolean;
-    costHistory: CostHistory[];
+    is_purchased: boolean;
+    is_manufactured: boolean;
+    cost_history: CostHistory[];
 
     //   No ha sido implementado aún
     imageUrl?: string;
 }
+
+/**
+ * Intefaz que herede las propiedades de Product
+ * Elimina las siguientes propiedades:
+ *  - cost_histori
+ *  - id
+ *  - current_stock
+ *  - imageUrl
+ */
+export type ProductFormData = Omit<Product, "cost_history" | "id" | "current_stock" | "imageUrl">
 
 export interface PreviousPageCache {
   page: number
