@@ -8,6 +8,7 @@ import {
     Radio,
     Settings,
     Sliders,
+    ArrowRightLeft
 } from "lucide-react"
 import type { NavigationSection } from "./types"
 import LiveProductionInsight from "../components/details/LiveProductionInsight"
@@ -33,7 +34,7 @@ export const navigationSections: NavigationSection[] = [
         items: [
             { label: "Productos", path: "/products", icon: Package, title: "Ver productos" },
             { label: "Recetas", path: "/bom", icon: FileText, title: "Ver BOM" },
-            { label: "Parámetros", path: "/parameters", icon: Sliders, title: "Ver parámetros" },
+            { label: "Movimiento de productos", path: "/products-movements", icon: ArrowRightLeft, title: "Ver movimiento de productos" },
         ],
     },
     {
@@ -41,6 +42,7 @@ export const navigationSections: NavigationSection[] = [
         title: "Planta",
         items: [
             { label: "Máquinas", path: "/machines", icon: Factory, title: "Ver máquinas" },
+            { label: "Máquina-Producto", path: "/machine-products", icon: Sliders, title: "Ver máquina-producto" },
             { label: "Sensores", path: "/sensors", icon: Gauge, title: "Ver sensores" },
         ],
     },

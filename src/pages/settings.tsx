@@ -15,12 +15,12 @@ import DowntimeReasonModal from "../components/settings/DowntimeReasonModal"
 import MovementReasonModal from "../components/settings/MovementReasonModal"
 import {
   type SettingsCacheItem
-} from "../logic/settingsLogic.ts"
+} from "../controllers/settingsController.ts"
 import SettingsCard from "../components/settings/SettingsCard.tsx"
 import type { SettingsSection } from "../scripts/URL.ts"
 import { tags } from "../scripts/URL.ts"
-import { send_http_get, send_http_post, send_http_patch } from "../scripts/http.ts"
-import { settingsLogic } from "../logic/settingsLogic.ts"
+import { send_http_post, send_http_patch } from "../scripts/http.ts"
+import { settingsLogic } from "../controllers/settingsController.ts"
 
 // Interfaz para definir los items de las tarjetas
 interface SettingItemsCards {

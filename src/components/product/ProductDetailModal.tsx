@@ -3,7 +3,7 @@ import { DollarSign, Factory, Package, ShoppingCart, TrendingDown, TrendingUp, X
 import type { Product } from "../../interfaces/product"
 import type { Category } from "../../interfaces/category"
 import type { Unit } from "../../interfaces/unit"
-import { mapProduct } from "../../logic/productLogic"
+import { mapProduct } from "../../controllers/productController"
 import { send_http_patch } from "../../scripts/http"
 import { api_modify_product } from "../../scripts/URL"
 import {
@@ -13,7 +13,7 @@ import {
   HIGH_LEVEL,
   MEDIUM_LEVEL,
   LOW_LEVEL,
-} from "../../logic/productLogic"
+} from "../../controllers/productController"
 import type { ProductFormData } from "../../interfaces/product"
 
 // COMPONENTE: Interfaz de propiedades para el componente ProductDetailModal (este componente)

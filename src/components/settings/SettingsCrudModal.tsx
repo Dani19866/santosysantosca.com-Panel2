@@ -7,7 +7,7 @@ import {
     RefreshCw,
     X,
 } from "lucide-react"
-import type { SettingsCacheItem } from "../../logic/settingsLogic"
+import type { SettingsCacheItem } from "../../controllers/settingsController"
 
 interface SettingsCrudModalProps {
     isOpen: boolean                                         // Verificar si se muestra o se oculta el modal

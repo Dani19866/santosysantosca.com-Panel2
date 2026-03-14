@@ -20,7 +20,7 @@ import {
   mapProduct,
   getPreviousPageCache,
   savePreviousPageCache
-} from "../logic/productLogic.ts"
+} from "../controllers/productController.ts"
 import { useViewMode } from "../layout/viewMode.ts"
 import {
   api_get_products,
@@ -29,11 +29,11 @@ import {
 import {
   PRODUCTS_PER_PAGE,
   PRODUCTS_FETCH_SIZE
-} from "../logic/productLogic.ts"
+} from "../controllers/productController.ts"
 import type { Category } from "../interfaces/category.tsx"
 import type { Unit } from "../interfaces/unit.tsx"
 import type { SettingsSection } from "../scripts/URL.ts"
-import { settingsLogic, type SettingsCacheItem } from "../logic/settingsLogic.ts"
+import { settingsLogic, type SettingsCacheItem } from "../controllers/settingsController.ts"
 
 interface SearchDropdownPosition {
   top: number

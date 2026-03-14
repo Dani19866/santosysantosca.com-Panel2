@@ -1,6 +1,6 @@
 import { ListTree } from "lucide-react"
 import SettingsCrudModal from "./SettingsCrudModal"
-import type { SettingsCacheItem } from "../../logic/settingsLogic"
+import type { SettingsCacheItem } from "../../controllers/settingsController"
 
 interface MovementReasonModalProps {
   isOpen: boolean

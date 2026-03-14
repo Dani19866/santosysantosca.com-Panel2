@@ -63,7 +63,7 @@ export default function SearchResultsDropdown({
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4">
                   <div className="min-w-0">
                     <p className="font-['Inter:Bold',sans-serif] font-bold text-[12px] text-[#9CA3AF] truncate">
-                      {product.internalCode}
+                      {product.internal_code}
                     </p>
                     <p className="font-['Inter:Bold',sans-serif] font-bold text-[13px] text-[#363636] truncate">
                       {product.name}

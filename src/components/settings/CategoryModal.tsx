@@ -1,6 +1,6 @@
 import { Tag } from "lucide-react"
 import SettingsCrudModal from "./SettingsCrudModal"
-import type { SettingsCacheItem } from "../../logic/settingsLogic"
+import type { SettingsCacheItem } from "../../controllers/settingsController"
 
 interface CategoryModalProps {
   isOpen: boolean
