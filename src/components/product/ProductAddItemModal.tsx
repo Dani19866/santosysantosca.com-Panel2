@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { X, Package, DollarSign, Tag, Ruler, Shield, Factory, ShoppingCart } from 'lucide-react';
 import { send_http_post } from '../../scripts/http.ts';
 import { api_save_product } from "../../scripts/URL.ts"
-import type { Category } from '../../interfaces/category.ts';
-import type { Unit } from '../../interfaces/unit.ts';
+import type { Category } from '../../interfaces/categoryInterface.ts';
+import type { Unit } from '../../interfaces/unitInterface.ts';
 
 interface AddProductModalProps {
   isOpen: boolean;

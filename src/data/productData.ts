@@ -1,3 +1,3 @@
-import type { Product } from "../interfaces/product"
+import type { Product } from "../interfaces/productInterface"
 
 export const productsMock: Product[] = []

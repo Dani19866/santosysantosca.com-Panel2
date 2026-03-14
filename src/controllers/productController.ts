@@ -2,7 +2,7 @@ import type {
   Product, 
   PreviousPageCache,
   ProductFormData
-} from "../interfaces/product"
+} from "../interfaces/productInterface"
 
 // Interfaz de la estructura de datos del cálculo de tendencia de costo
 export type CostTrend = {

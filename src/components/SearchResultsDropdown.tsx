@@ -1,5 +1,5 @@
 import { Eye } from "lucide-react"
-import type { Product } from "../interfaces/product"
+import type { Product } from "../interfaces/productInterface"
 
 interface SearchResultsDropdownProps {
   isVisible: boolean

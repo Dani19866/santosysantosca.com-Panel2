@@ -8,7 +8,7 @@ import {
   Database,
   Plus
 } from "lucide-react"
-import type { Product } from "../interfaces/product.tsx"
+import type { Product } from "../interfaces/productInterface.ts"
 import Layout from "../layout/Layout.tsx"
 import AddProductModal from "../components/product/ProductAddItemModal.tsx"
 import ProductDetailModal from "../components/product/ProductDetailModal.tsx"
@@ -30,8 +30,8 @@ import {
   PRODUCTS_PER_PAGE,
   PRODUCTS_FETCH_SIZE
 } from "../controllers/productController.ts"
-import type { Category } from "../interfaces/category.tsx"
-import type { Unit } from "../interfaces/unit.tsx"
+import type { Category } from "../interfaces/categoryInterface.ts"
+import type { Unit } from "../interfaces/unitInterface.ts"
 import type { SettingsSection } from "../scripts/URL.ts"
 import { settingsLogic, type SettingsCacheItem } from "../controllers/settingsController.ts"
 
