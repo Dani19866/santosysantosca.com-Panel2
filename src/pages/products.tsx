@@ -1,13 +1,5 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react"
-import {
-  Database,
-  Plus
-} from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { Database, Plus } from "lucide-react"
 import type { Product } from "../interfaces/productInterface.ts"
 import Layout from "../layout/Layout.tsx"
 import AddProductModal from "../components/product/ProductAddItemModal.tsx"
@@ -15,21 +7,9 @@ import ProductDetailModal from "../components/product/ProductDetailModal.tsx"
 import ProductList from "../components/product/ProductList.tsx"
 import SearchBar from "../components/SearchBar.tsx"
 import SearchResultsDropdown from "../components/SearchResultsDropdown.tsx"
-import {
-  getStockColor,
-  mapProduct,
-  getPreviousPageCache,
-  savePreviousPageCache
-} from "../controllers/productController.ts"
+import { productController } from "../controllers/productController.ts"
 import { useViewMode } from "../layout/viewMode.ts"
-import {
-  api_get_products,
-  api_search_product
-} from "../scripts/URL.ts"
-import {
-  PRODUCTS_PER_PAGE,
-  PRODUCTS_FETCH_SIZE
-} from "../controllers/productController.ts"
+import { api_search_product } from "../scripts/URL.ts"
 import type { Category } from "../interfaces/categoryInterface.ts"
 import type { Unit } from "../interfaces/unitInterface.ts"
 import type { SettingsSection } from "../scripts/URL.ts"
@@ -114,11 +94,17 @@ function ProductsContent() {
 
   // Función para guardar en caché la página actual de productos antes de navegar a otra página
   const saveCurrentPageAsPreviousCache = () => {
-    savePreviousPageCache({
+    productController.savePreviousPageCache({
       page: currentPage,
       products,
       hasNextPage,
     })
+
+    // savePreviousPageCache({
+    //   page: currentPage,
+    //   products,
+    //   hasNextPage,
+    // })
   }
 
   // Función para manejar la navegación a la siguiente página de productos
@@ -174,7 +160,8 @@ function ProductsContent() {
       const payload = await response.json()
 
       // Parseamos los productos al formato correspondiente
-      const parsedProducts = payload.map(mapProduct)
+      // const parsedProducts = payload.map(mapProduct)
+      const parsedProducts = payload.map((item) => productController.mapItem(item))
 
       // Guardamos los productos buscados
       setProductsFiltered(parsedProducts)
@@ -207,7 +194,6 @@ function ProductsContent() {
     // Indicamos que no se está cargando ningún resultado
     setIsLoadingProductsFiltered(false)
   }
-
 
   /**
    * Función que obtiene los datos de categorías o unidades desde el backend para 
@@ -270,21 +256,26 @@ function ProductsContent() {
 
   /**
    * Este hook es el encargado de manejar la lógica relacionada con la carga de productos
-   * inicial. Se ejecuta cada vez que se cambia la página actual (currentPage) para cargar
+   * inicial. 
+   * 
+   * Se ejecuta cada vez que se cambia la página actual (currentPage) para cargar
    * los productos que se requieran.
+   * 
+   * Del controlador utiliza lo siguiente:
+   * - getPreviousPageCache: Obtener de la caché, la info pasada (si aplica)
+   * - getItemsFromApi: Función que hace la petición HTTP al backend para obtener los productos.
+   * - getItemsPerPage: Obtener cuantos productos se deben mostrar por página (definido en el controlador).
+   * - getItemsFetchSize: Obtener cuántos productos se deben traer del backend para determinar si hay más páginas (definido en el controlador).
    */
   useEffect(() => {
-    // Usamos AbortController para poder cancelar la solicitud si el componente se desmonta antes de que la respuesta llegue
-    const abortController = new AbortController()
-
     // Función que ejecuta la petición HTTP
     const loadProducts = async () => {
       // Reset de estados antes de iniciar la carga
       setIsLoadingProducts(true)
       setProductsError("")
 
-      const cachedPage = getPreviousPageCache()
-
+      // Lógica para intentar obtener la página anterior desde caché
+      const cachedPage = productController.getPreviousPageCache()
       if (cachedPage && cachedPage.page === currentPage) {
         setProducts(cachedPage.products)
         setHasNextPage(cachedPage.hasNextPage)
@@ -293,44 +284,28 @@ function ProductsContent() {
       }
 
       try {
-        // URL API
-        const offset = (currentPage - 1) * PRODUCTS_PER_PAGE
-        const url = `${api_get_products}?limit=${PRODUCTS_FETCH_SIZE}&offset=${offset}&sort=name&desc=false`
+        // Calculamos el offset para la consulta al backend
+        const offset = (currentPage - 1) * productController.getItemsFetchSize()
 
-        // Solicitud HTTP
-        const response = await fetch(url, {
-          method: "GET",
-          credentials: "include",
-          signal: abortController.signal,
-        })
+        // Ejecutamos la función que se encarga de obtener los items del back-end
+        const fetchedProducts = await productController.getItemsFromApi(offset.toString(), "&sort=name&desc=false")
 
-        // Capturamos posible error HTTP (códigos 4xx o 5xx)
-        if (!response.ok) {
-          throw new Error(`No se pudo obtener los productos (HTTP ${response.status})`)
-        }
+        // Determinamos si hay más productos para la siguiente página y cuáles mostrar en la página actual
+        const hasMoreProducts = fetchedProducts.length === productController.getItemsFetchSize()
 
-        // Esperamos la respeusta y la parseamos como JSON
-        const payload = await response.json()
-
-        // Parseamos los productos al formato correspondiente
-        const parsedProducts = payload.map(mapProduct)
-        const hasMoreProducts = parsedProducts.length === PRODUCTS_FETCH_SIZE
-        const productsToDisplay = parsedProducts.slice(0, PRODUCTS_PER_PAGE)
+        // Mostramos en pantalla los productos correspondientes a la página actual (limitados por PRODUCTS_PER_PAGE)
+        const productsToDisplay = fetchedProducts.slice(0, productController.getItemsPerPage())
 
         // Guardamos los productos en el estado
         setProducts(productsToDisplay)
         setHasNextPage(hasMoreProducts)
 
-      }
-      // Capturamos posibles errores
-      catch (error) {
+      } catch (error) {
         if ((error as Error).name !== "AbortError") {
           console.error("Error al cargar productos:", error)
           setProductsError("No se pudieron cargar los productos desde el servidor.")
         }
-      }
-      // Finalmente, indicamos que la carga ha terminado (ya sea por éxito o error)
-      finally {
+      } finally {
         setIsLoadingProducts(false)
       }
     }
@@ -339,7 +314,6 @@ function ProductsContent() {
     loadProducts()
 
     return () => {
-      abortController.abort()
     }
   }, [currentPage])
 
@@ -502,7 +476,7 @@ function ProductsContent() {
 
         {/* Estado de éxito: Se muestra la lista de productos si se cargaron correctamente */}
         {!isLoadingProducts && !productsError && filteredProducts.length > 0 && (
-          <ProductList viewMode={viewMode} products={filteredProducts} onViewDetails={handleViewDetails} getStockColor={getStockColor} />
+          <ProductList viewMode={viewMode} products={filteredProducts} onViewDetails={handleViewDetails} getStockColor={productController.getStockColor} />
         )}
 
         {!isLoadingProducts && !productsError && (

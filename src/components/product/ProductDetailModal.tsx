@@ -3,17 +3,9 @@ import { DollarSign, Factory, Package, ShoppingCart, TrendingDown, TrendingUp, X
 import type { Product } from "../../interfaces/productInterface"
 import type { Category } from "../../interfaces/categoryInterface"
 import type { Unit } from "../../interfaces/unitInterface"
-import { mapProduct } from "../../controllers/productController"
 import { send_http_patch } from "../../scripts/http"
 import { api_modify_product } from "../../scripts/URL"
-import {
-  type CostTrend,
-  type StockStatus,
-  createFormDataFromProduct,
-  HIGH_LEVEL,
-  MEDIUM_LEVEL,
-  LOW_LEVEL,
-} from "../../controllers/productController"
+import { productController, type CostTrend, type StockStatus } from "../../controllers/productController.ts"
 import type { ProductFormData } from "../../interfaces/productInterface"
 
 // COMPONENTE: Interfaz de propiedades para el componente ProductDetailModal (este componente)
@@ -66,7 +58,7 @@ export default function ProductDetailModal({
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState("")
   const [fieldErrors, setFieldErrors] = useState<ProductEditFieldErrors>(INITIAL_FIELD_ERRORS)
-  const [formData, setFormData] = useState<ProductFormData>(() => createFormDataFromProduct(product))
+  const [formData, setFormData] = useState<ProductFormData>(() => productController.createFormDataFromProduct(product))
 
   /**
    * LÓGICA: Hook que permite reiniciar el estado del formulario cada vez que se 
@@ -86,7 +78,7 @@ export default function ProductDetailModal({
     setFieldErrors(INITIAL_FIELD_ERRORS)
 
     // Reiniciar datos del formulario con la información del producto actual
-    setFormData(createFormDataFromProduct(product))
+    setFormData(productController.createFormDataFromProduct(product))
   }, [product])
 
   /**
@@ -135,9 +127,9 @@ export default function ProductDetailModal({
     const percentage = (current / safety) * 100
 
     // Estilos en base a la cantidad segura
-    if (percentage >= HIGH_LEVEL) return { label: "Óptimo", color: "text-[#10c507]", bg: "bg-[#10c507]/10", border: "border-[#10c507]/40" }
-    if (percentage >= MEDIUM_LEVEL) return { label: "Normal", color: "text-[#1e11d9]", bg: "bg-[#1e11d9]/10", border: "border-[#1e11d9]/40" }
-    if (percentage >= LOW_LEVEL) return { label: "Bajo", color: "text-[#f59e0b]", bg: "bg-[#f59e0b]/10", border: "border-[#f59e0b]/40" }
+    if (percentage >= productController.HIGH_LEVEL) return { label: "Óptimo", color: "text-[#10c507]", bg: "bg-[#10c507]/10", border: "border-[#10c507]/40" }
+    if (percentage >= productController.MEDIUM_LEVEL) return { label: "Normal", color: "text-[#1e11d9]", bg: "bg-[#1e11d9]/10", border: "border-[#1e11d9]/40" }
+    if (percentage >= productController.LOW_LEVEL) return { label: "Bajo", color: "text-[#f59e0b]", bg: "bg-[#f59e0b]/10", border: "border-[#f59e0b]/40" }
     return { label: "Crítico", color: "text-[#c50707]", bg: "bg-[#c50707]/10", border: "border-[#c50707]/40" }
   }
 
@@ -210,7 +202,7 @@ export default function ProductDetailModal({
     setFieldErrors(INITIAL_FIELD_ERRORS)
 
     // Cargar datos actuales del producto en el formulario
-    setFormData(createFormDataFromProduct(product))
+    setFormData(productController.createFormDataFromProduct(product))
   }
 
   /**
@@ -236,7 +228,7 @@ export default function ProductDetailModal({
     setFieldErrors(INITIAL_FIELD_ERRORS)
 
     // Reiniciamos el formulario con el campo del producto de ese instante
-    setFormData(createFormDataFromProduct(product))
+    setFormData(productController.createFormDataFromProduct(product))
   }
 
   /**
@@ -293,7 +285,7 @@ export default function ProductDetailModal({
       const updatedProduct = response && typeof response === "object" && "id"
         in response ?
         // Si se cumple, entonces se mapea la respuesta a un objeto tipo Product
-        mapProduct(response)
+        productController.mapItem(response)
         :
         // Si no se cumple, igualmente se actualiza los valores en pantalla
         {

@@ -1,5 +1,5 @@
 class ProductMovementsLogic {
-
+    
 }
 
-export const productMovementsLogic = new ProductMovementsLogic()
+export const productMovementsController = new ProductMovementsLogic()
